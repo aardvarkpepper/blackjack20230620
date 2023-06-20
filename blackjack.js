@@ -120,10 +120,12 @@ class Blackjack {
         }
 
         const adjustHandValue = (playerIndex, totalValue, aceCount) => {
+            // console.log("Adjustment running", playerIndex, totalValue, aceCount);
             if (totalValue > 21 && aceCount > 0) {
-                adjustHandValue(playerIndex, totalValue - 10, aceCount - 1);
+                return adjustHandValue(playerIndex, totalValue - 10, aceCount - 1);
             }
             this.players[playerIndex].playerHandValue = totalValue;
+           // console.log("Adjustment ending", totalValue, aceCount);
             return [totalValue, aceCount];
         }
 
@@ -141,6 +143,7 @@ class Blackjack {
                     aceCount += 1;
                 }
             }
+            // console.log("Ace count:", aceCount);
             [totalValue, aceCount] = adjustHandValue(playerIndex, totalValue, aceCount);
             returnString += `hand value: ${totalValue}`;
             console.log(`Player: ${this.players[playerIndex].playerName}:`);
@@ -157,7 +160,7 @@ class Blackjack {
                         switch (userInput) {
                             case "0":
                                 readline.close();
-                                resolve();
+                                // resolve();
                                 break;
                             case "1":
                                 console.log("<<PLAYER HITS>>");
@@ -188,7 +191,30 @@ class Blackjack {
 
         // sequential functions
         const roundEnd = () => {
-
+            console.log ("");
+            console.log ("<<ROUND END>>")
+            let winningArray = [];
+            let max = 0;
+            for (let i = 0; i < this.players.length; i++) {
+                if (this.players[i].playerHandValue <= 21) {
+                    if (this.players[i].playerHandValue === max) {
+                        winningArray.push(i);
+                    } else if (this.players[i].playerHandValue > max) {
+                        winningArray = [];
+                        winningArray.push(i);
+                        max = this.players[i].playerHandValue;
+                    }
+                }
+            }
+            console.log("winningArray: ", winningArray, "max: ", max)
+            if (winningArray.length === 0) {
+                console.log ("All players busted!")
+            } else {
+                for (let i = 0; i < winningArray.length; i++) {
+                    console.log(`Winning player: ${this.players[i].playerName}`)
+                }
+            }
+            roundMenu();
         }
 
         const playerTurns = async () => {
