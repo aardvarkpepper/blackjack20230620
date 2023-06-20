@@ -49,6 +49,7 @@ class Blackjack {
     constructor(decksUsed = 6) {
         this.decksUsed = decksUsed;
         this.deck = [];
+        this.discard = [];
         this.createDeck();
         this.shuffleDeck();
         this.players = [];
@@ -154,7 +155,7 @@ class Blackjack {
             //console.log("this", this);
             //console.log("this...playerHandValue", this.players[playerIndex].playerHandValue);
             //console.log("typeof", typeof(this.players[playerIndex].playerHandValue));
-            return new Promise((resolve) => {
+            return new Promise((hamster) => {
                 if (this.players[playerIndex].playerHandValue <= 21) {
                     readline.question("Enter Selection: ", (userInput) => {
                         switch (userInput) {
@@ -166,21 +167,21 @@ class Blackjack {
                                 console.log("<<PLAYER HITS>>");
                                 dealCard(playerIndex);
                                 showHand(playerIndex);
-                                return playerPrompt(playerIndex).then(resolve);
+                                return playerPrompt(playerIndex).then(hamster);
                                 break;
                             case "2":
                                 console.log("<<PLAYER STANDS>>");
-                                resolve();
+                                hamster();
                                 break;
                             default:
                                 console.log("Invalid selection.");
-                                return playerPrompt(playerIndex).then(resolve);
+                                return playerPrompt(playerIndex).then(hamster);
                         }
                     })
                 } else if (this.players[playerIndex].playerHandValue > 21) {
                     console.log(`Player ${this.players[playerIndex].playerName} has busted!`);
                     console.log("");
-                    resolve();
+                    hamster();
                 }
                 //return new Promise((resolve) => { });
                 //use .then(resolve) as in playerPrompt(playerIndex).then(resolve);
@@ -197,21 +198,37 @@ class Blackjack {
             let max = 0;
             for (let i = 0; i < this.players.length; i++) {
                 if (this.players[i].playerHandValue <= 21) {
+                    // console.log("inner loop", i, JSON.stringify(this.players[i].playerHandValue))
                     if (this.players[i].playerHandValue === max) {
                         winningArray.push(i);
                     } else if (this.players[i].playerHandValue > max) {
-                        winningArray = [];
+                        winningArray.length = 0;
+                        // console.log("I'm trying to push:", i);
                         winningArray.push(i);
                         max = this.players[i].playerHandValue;
                     }
                 }
             }
+
+            for (let i = 0; i < this.players.length; i++) {
+                this.players[i].playerHandValue = 0;
+                this.discard = [...this.discard, ...this.players[i].playerHand];
+                this.players[i].playerHand.length = 0;
+            }
+            /*
+            console.log("<<CLEANUP>>")
+            for (let i = 0; i < this.players.length; i++) {
+                console.log (`Player ${i} hand value: ${JSON.stringify(this.players[i].playerHandValue)}`);
+                console.log (`Player ${i} hand cards: ${JSON.stringify(this.players[i].playerHand)}`)
+            }
+            console.log(`Discards: ${JSON.stringify(this.discard)}`);
+            */
             console.log("winningArray: ", winningArray, "max: ", max)
             if (winningArray.length === 0) {
                 console.log ("All players busted!")
             } else {
                 for (let i = 0; i < winningArray.length; i++) {
-                    console.log(`Winning player: ${this.players[i].playerName}`)
+                    console.log(`Winning player: ${this.players[winningArray[i]].playerName}`)
                 }
             }
             roundMenu();

@@ -23,3 +23,5 @@ If players tied, it's a "push" if they're only players.  If some players tied fo
 On player turn, entering 0 to exit just exits readline.  The promise is never fulfilled, but maybe that's not an issue?
 
 Transitioning between turns is abrupt, perhaps insert "press enter to continue".
+
+If blank card not implemented, have to re-initialize deck every round, or otherwise do something to fix when cards run out of deck.
